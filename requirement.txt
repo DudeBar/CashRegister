@@ -1,0 +1,6 @@
+Django==1.6
+South==0.8.4
+wsgiref==0.1.2
+django-bootstrap3==4.7.0
+django-qrcode==0.3
+pytz

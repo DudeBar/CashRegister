@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for barman in barmans %}
+        <a href="{% url 'make_command' barman.id %}" class="btn btn-default">{{ barman.name }}</a>
+    {% endfor %}
+{% endblock %}
