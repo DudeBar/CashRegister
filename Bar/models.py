@@ -10,6 +10,13 @@ class Category(models.Model):
     name = models.CharField(max_length=200)
     parent = models.ForeignKey("self",null=True, blank=True, default=None)
 
+    @classmethod
+    def get_category_path(self, category, path = []):
+        if category.parent:
+            path.append(category.parent)
+            self.get_category_path(category.parent, path)
+        return path
+
     def __unicode__(self):
         return self.name
 
