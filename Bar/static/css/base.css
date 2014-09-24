@@ -2,3 +2,22 @@
 body {
     padding-top: 70px;
 }
+
+.command-product{
+    height: 40px;
+    background-color: silver;
+    display: flex;
+    align-items: center;
+}
+
+.product_list {
+    height: 400px;
+}
+
+.command_list {
+    height: 400px;
+}
+
+.hidden-div {
+    display: none;
+}

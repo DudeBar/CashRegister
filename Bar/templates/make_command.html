@@ -16,7 +16,20 @@
                         <button type="button" class="btn btn-default category" id="{{ category.id }}">{{ category.name }}</button>
                     {% endfor %}
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-12" id="products">
+                <div class="col-sm-12 col-md-12 col-lg-12 product_list" id="products">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 calculette" id="calculette">
+                    <div class="btn btn-default calc" id="0">0</div>
+                    <div class="btn btn-default calc" id="1">1</div>
+                    <div class="btn btn-default calc" id="2">2</div>
+                    <div class="btn btn-default calc" id="3">3</div>
+                    <div class="btn btn-default calc" id="4">4</div>
+                    <br/>
+                    <div class="btn btn-default calc" id="5">5</div>
+                    <div class="btn btn-default calc" id="6">6</div>
+                    <div class="btn btn-default calc" id="7">7</div>
+                    <div class="btn btn-default calc" id="8">8</div>
+                    <div class="btn btn-default calc" id="9">9</div>
                 </div>
             </div>
         </div>
@@ -27,5 +40,12 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-3 col-md-3 col-lg-3 command_list" id="command">
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3" >
+            <div class="btn btn-default" id="annuler">Annuler</div>
+            <div class="btn btn-default" id="validate">Valider</div>
+        </div>
+        <input type="hidden" id="barman" value="{{ barman_id }}">
     </div>
 {% endblock %}

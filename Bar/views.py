@@ -5,7 +5,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-from Bar.models import BarMan, Category, Product
+from Bar.models import BarMan, Category, Product, Commande, Session, Commande_has_products
+from django.views.decorators.csrf import csrf_exempt
 
 
 def home(request):
@@ -15,6 +16,10 @@ def home(request):
             'barmans': barmans
         })
     else:
+        if Session.objects.filter(en_cours=1).exists():
+            session = Session.objects.get(en_cours=1)
+            session.en_cours=0
+            session.save()
         return render(request, "closed_home.html", {})
 
 def open(request):
@@ -27,6 +32,7 @@ def open(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
+                    Session.objects.create(en_cours=1)
                     return redirect("home")
                 else:
                     return redirect("open")
@@ -39,6 +45,9 @@ def open(request):
         return render(request, "open.html", {'form':form})
 
 def close(request):
+    session = Session.objects.get(en_cours=1)
+    session.en_cours = 0
+    session.save()
     logout(request)
     return redirect("home")
 
@@ -85,3 +94,22 @@ def product_onclick(request, product_id):
     if request.is_ajax():
         product = Product.objects.get(pk=product_id)
         return HttpResponse(json.dumps({"id":product.pk, "name":product.name, "price":product.price, "happy_hour":product.happy_hour}))
+
+@login_required
+def add_command(request):
+    if request.method == "POST" and request.is_ajax():
+        try:
+            session = Session.objects.get(en_cours=1)
+            product_list = json.loads(request.POST.get("product_list"))
+            barman_id = request.POST.get("barman")
+            barman = BarMan.objects.get(pk=barman_id)
+            total_price = request.POST.get("total_price")
+            command = Commande(barman=barman, total_price=total_price, payment="Espece", session=session)
+            command.save()
+            for product_command in product_list:
+                product = Product.objects.get(pk=product_command['id'])
+                Commande_has_products.objects.create(commande=command, product=product, price=product_command["price"])
+            return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), mimetype="application/json")
+        except:
+            return HttpResponse(json.dumps({"result" : True, "data" : "NOK" }), mimetype="application/json")
+

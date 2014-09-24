@@ -21,7 +21,7 @@ class Category(models.Model):
         return self.name
 
 class Session(models.Model):
-    start_session = models.DateTimeField()
+    start_session = models.DateTimeField(auto_now=True)
     end_session = models.DateTimeField(null=True)
     total_money = models.FloatField(default=0)
     en_cours = models.IntegerField()
