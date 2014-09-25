@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% for barman in barmans %}
-        <a href="{% url 'make_command' barman.id %}" class="btn btn-default">{{ barman.name }}</a>
-    {% endfor %}
+    <div class="row">
+        <div class="col-lg-9">
+        {% for barman in barmans %}
+            <a href="{% url 'make_command' barman.id %}" class="btn btn-default">{{ barman.name }}</a>
+        {% endfor %}
+        </div>
+        <div class="col-lg-3">
+            <ul>
+            {% for command in last_commands %}
+                <li>{{ command.barman }} - {{ command.total_price }}€</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}

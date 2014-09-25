@@ -6,14 +6,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from Bar.models import BarMan, Category, Product, Commande, Session, Commande_has_products
-from django.views.decorators.csrf import csrf_exempt
+from Bar.tasks import send_fidelity
 
 
 def home(request):
     if request.user.is_authenticated():
         barmans = BarMan.objects.all()
+        last_commands = Commande.objects.all().order_by('-date')[:10]
         return render(request, "opened_home.html", {
-            'barmans': barmans
+            'barmans': barmans,
+            'last_commands': last_commands
         })
     else:
         if Session.objects.filter(en_cours=1).exists():
@@ -109,7 +111,8 @@ def add_command(request):
             for product_command in product_list:
                 product = Product.objects.get(pk=product_command['id'])
                 Commande_has_products.objects.create(commande=command, product=product, price=product_command["price"])
-            return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), mimetype="application/json")
+            send_fidelity.delay()
+            return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), content_type="application/json")
         except:
-            return HttpResponse(json.dumps({"result" : True, "data" : "NOK" }), mimetype="application/json")
+            return HttpResponse(json.dumps({"result" : True, "data" : "NOK" }), content_type="application/json")
 

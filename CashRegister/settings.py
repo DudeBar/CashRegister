@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+import djcelery
+djcelery.setup_loader()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -38,7 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'Bar',
     'south',
-    'bootstrap3'
+    'bootstrap3',
+    'djcelery'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -92,3 +95,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+BROKER_URL = 'redis://localhost:6379/0'
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout':24 * 3600}

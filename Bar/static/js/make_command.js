@@ -57,7 +57,7 @@ $(document).ready(function() {
             $("#command").append("<div class='row vertical-align command-product'>" +
                                  "<div class='col-sm-8 col-md-8 col-lg-8' id='product_"+i+"'>"+product_info.name+" : "+product_info.price+"€</div>" +
                                  "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default glyphicon glyphicon-trash delete' id="+i+"></button>" +
-                                 "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default glyphicon glyphicon-gift gift' id="+i+"></button>" +
+                                 "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default glyphicon glyphicon-header gift' id="+i+"></button>" +
                               "</div>");
         }
         $("#total_price").html(total_price);
@@ -122,6 +122,10 @@ $(document).ready(function() {
             calc_cumul = "";
         }
         calc_cumul += calc_key;
+    });
+
+    $('body').on("click", ".annuler", function(){
+        window.location.replace("/");
     });
 
     $('body').on("click", "#validate", function(){
