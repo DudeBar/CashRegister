@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
 {% block content %}
-    <div class="row">
-        <div class="col-sm-9 col-md-9 col-lg-9">
+    <div class="make-command">
+        <div class="col-sm-9 col-md-9 col-lg-9 products-panel">
             <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="ariane">
-                            Fil d'ariane
-                        </div>
-                    </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 ariane" id="ariane">
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12 separator">
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-12" id="categories">
                     {% for category in categories %}
-                        <button type="button" class="btn btn-default category" id="{{ category.id }}">{{ category.name }}</button>
+                        <button type="button" class="btn btn-default btn-info category" id="{{ category.id }}">{{ category.name }}</button>
                     {% endfor %}
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-12 product_list" id="products">
+                    {% for product in products %}
+                        <button type="button" class="btn btn-default btn-product product glyphicon glyphicon-star-empty" id="{{ product.pk }}">{{ product.name }}</button>
+                    {% endfor %}
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-12 calculette" id="calculette">
                     <div class="btn btn-default calc" id="0">0</div>
@@ -24,7 +24,6 @@
                     <div class="btn btn-default calc" id="2">2</div>
                     <div class="btn btn-default calc" id="3">3</div>
                     <div class="btn btn-default calc" id="4">4</div>
-                    <br/>
                     <div class="btn btn-default calc" id="5">5</div>
                     <div class="btn btn-default calc" id="6">6</div>
                     <div class="btn btn-default calc" id="7">7</div>
@@ -33,19 +32,17 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-3 col-md-3 col-lg-3">
-            <div class="panel panel-default">
-                <div class="panel-body" >
-                    <b>Total : </b><span id="total_price">0</span>€
-                </div>
+        <div class="col-sm-3 col-md-3 col-lg-3 command-panel">
+            <div class="command-total col-lg-11 col-md-11 col-sm-11">
+                <b>Total : </b><span id="total_price">0</span>€
             </div>
-        </div>
-        <div class="col-sm-3 col-md-3 col-lg-3 command_list" id="command">
-        </div>
-        <div class="col-sm-3 col-md-3 col-lg-3" >
-            <div class="btn btn-default" id="annuler">Annuler</div>
-            <div class="btn btn-default" id="validate">Valider</div>
-        </div>
+            <div class="command_list col-lg-12 col-md-12 col-sm-12">
+                <ul id="command"></ul>
+            </div>
+            <div class="command-button col-lg-12 col-md-12 col-sm-12">
+                <div class="btn btn-default btn-success col-lg-offset-2 col-lg-8" id="validate">Valider</div>
+            </div>
         <input type="hidden" id="barman" value="{{ barman_id }}">
+        <input type="hidden" id="happy_hour" value="{{ happy_hour }}">
     </div>
 {% endblock %}

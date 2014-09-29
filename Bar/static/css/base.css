@@ -3,6 +3,9 @@ body {
     padding-top: 70px;
 }
 
+.make-command{
+    height: 100%;
+}
 .command-product{
     height: 40px;
     background-color: silver;
@@ -15,9 +18,95 @@ body {
 }
 
 .command_list {
-    height: 400px;
+    height: 500px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .hidden-div {
     display: none;
+}
+
+.product_list{
+    margin-top: 20px;
+}
+
+.ariane {
+    background-color: white;
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.command-panel {
+    background-color: whitesmoke;
+    border-radius: 5px 5px 0px 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.command-total {
+    text-align: center;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-bottom: 20px;
+    height: 30px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    border-radius: 5px 5px 5px 5px;
+    border: 1px;
+    border-style: solid;
+}
+
+.command-total > b {
+    margin-left: 5px;
+}
+.command-total > span {
+    margin-left: 25px;
+}
+
+.command_list > ul > li {
+    height: 60px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    border-radius: 5px 0px 0px 5px;
+    margin-left: -20px;
+}
+
+.home {
+    height: 80%;
+}
+.home-barman {
+    height: 70%;
+}
+.home-option {
+    margin-top:30%;
+}
+.barman-btn {
+    height:80px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding-left: 10%;
+}
+
+.command-button{
+    margin-bottom: 20px;
+}
+
+.calc{
+    width: 60px;
+}
+
+.btn-product{
+    height: 40px;
+}
+
+.separator{
+    height: 2px;
+    background-color: black;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

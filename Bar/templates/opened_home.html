@@ -2,12 +2,19 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-9">
-        {% for barman in barmans %}
-            <a href="{% url 'make_command' barman.id %}" class="btn btn-default">{{ barman.name }}</a>
-        {% endfor %}
+        <div class="col-lg-9 col-sm-9 col-md-9 home">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 home-barman">
+                    {% for barman in barmans %}
+                        <a href="{% url 'make_command' barman.id %}" class="btn btn-default col-lg-3 col-md-3 col-sm-3 col-lg-offset-1 barman-btn">{{ barman.name }}</a>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 home-option">
+                    <a href="{% url "set_happy_hour" %}" class="btn btn-default {% if happy_hour %}btn-danger{% endif %} col-lg-3 col-lg-offset-3 btn-hh">Happy Hour</a>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3 col-sm-3 col-md-3">
             <ul>
             {% for command in last_commands %}
                 <li>{{ command.barman }} - {{ command.total_price }}€</li>

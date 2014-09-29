@@ -11,4 +11,5 @@ urlpatterns = patterns(
     url(r'^add_command/$', views.add_command, name='add_command'),
     url(r'^category_onclick/(?P<category_id>\d+)/$', views.category_onclick, name='category_onclick'),
     url(r'^product_onclick/(?P<product_id>\d+)/$', views.product_onclick, name='product_onclick'),
+    url(r'^set_happy_hour/$', views.set_happy_hour, name='set_happy_hour'),
     )

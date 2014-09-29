@@ -7,13 +7,21 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from Bar.models import BarMan, Category, Product, Commande, Session, Commande_has_products
 from Bar.tasks import send_fidelity
+from django.db.models import Count, Avg
 
 
 def home(request):
     if request.user.is_authenticated():
+        happy_hour=False
+        if "happy_hour" not in request.session.keys():
+            request.session["happy_hour"]=False
+        else:
+            happy_hour=request.session.get("happy_hour")
+
         barmans = BarMan.objects.all()
         last_commands = Commande.objects.all().order_by('-date')[:10]
         return render(request, "opened_home.html", {
+            'happy_hour': happy_hour,
             'barmans': barmans,
             'last_commands': last_commands
         })
@@ -23,6 +31,14 @@ def home(request):
             session.en_cours=0
             session.save()
         return render(request, "closed_home.html", {})
+
+@login_required
+def set_happy_hour(request):
+    if request.session.get("happy_hour"):
+        request.session["happy_hour"]=False
+    else:
+        request.session["happy_hour"]=True
+    return redirect("home")
 
 def open(request):
     if request.method == "POST":
@@ -56,7 +72,24 @@ def close(request):
 @login_required
 def make_command(request, barman_id):
     categories = Category.objects.filter(parent=None)
-    return render(request, "make_command.html", {"barman_id":barman_id, "categories":categories})
+    current_session = Session.objects.get(en_cours=1)
+    best_product_list = Commande_has_products.objects.values('product').annotate(pcount=Count('product')).order_by('-pcount')[:3]
+    day_best_product_list = Commande_has_products.objects.filter(commande__session=current_session).values('product').annotate(pcount=Count('product')).order_by('-pcount')[:3]
+    products = []
+    for product in best_product_list:
+        product_objects = Product.objects.get(pk=product['product'])
+        products.append(product_objects)
+    for product in day_best_product_list:
+        product_objects = Product.objects.get(pk=product['product'])
+        if product_objects not in products:
+            products.append(product_objects)
+
+    return render(request, "make_command.html", {
+                        "barman_id":barman_id,
+                        "categories":categories,
+                        "products": products,
+                        "happy_hour":request.session["happy_hour"]
+    })
 
 def _get_category_path(category, path = []):
     category = Category.objects.get(pk=category)
@@ -111,6 +144,8 @@ def add_command(request):
             for product_command in product_list:
                 product = Product.objects.get(pk=product_command['id'])
                 Commande_has_products.objects.create(commande=command, product=product, price=product_command["price"])
+            session.total_money += total_price
+            session.save()
             send_fidelity.delay()
             return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), content_type="application/json")
         except:

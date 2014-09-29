@@ -26,7 +26,7 @@ $(document).ready(function() {
         var cat_buttons = "";
         for (var i=0; i<categories.length; i++){
             for(var key in categories[i])
-                $("#categories").append('<button type="button" class="btn btn-default category" id="'+key+'">'+categories[i][key]+'</button>\n');
+                $("#categories").append('<button type="button" class="btn btn-default btn-info category" id="'+key+'">'+categories[i][key]+'</button>\n');
         }
     }
 
@@ -35,7 +35,7 @@ $(document).ready(function() {
         var cat_buttons = "";
         for (var i=categories.length-1; i>=0; i--){
             for(var key in categories[i])
-                $("#ariane").append('<button type="button" class="btn btn-default category" id="'+key+'">'+categories[i][key]+'</button>\n');
+                $("#ariane").append('<button type="button" class="btn btn-default btn-warning category" id="'+key+'">'+categories[i][key]+'</button><div class="glyphicon glyphicon-chevron-right"></div>\n');
         }
     }
 
@@ -49,16 +49,20 @@ $(document).ready(function() {
     }
 
     function displayCommandProducts(){
+        var happy_hour = $("#happy_hour").val();
         $("#command").html("");
         total_price = 0;
         for (var i=0; i<products_command.length; i++){
             var product_info = products_command[i];
+            if (happy_hour=="True"){
+                product_info.price = product_info.happy_hour
+            }
             total_price += product_info.price;
-            $("#command").append("<div class='row vertical-align command-product'>" +
-                                 "<div class='col-sm-8 col-md-8 col-lg-8' id='product_"+i+"'>"+product_info.name+" : "+product_info.price+"€</div>" +
-                                 "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default glyphicon glyphicon-trash delete' id="+i+"></button>" +
-                                 "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default glyphicon glyphicon-header gift' id="+i+"></button>" +
-                              "</div>");
+            $("#command").append("<li draggable='true' data-product='"+i+"' class='drag-element'>" +
+                                 "<div class='col-sm-8 col-md-8 col-lg-8'>"+product_info.name+" : "+product_info.price+"€</div>" +
+                                 "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default btn-product glyphicon glyphicon-gift free' id="+i+"></button>" +
+                                 "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default btn-product glyphicon glyphicon-header gift' id="+i+"></button>" +
+                                 "</li>");
         }
         $("#total_price").html(total_price);
     }
@@ -104,9 +108,9 @@ $(document).ready(function() {
         });
     });
 
-    $('body').on("click", ".delete", function(){
+    $('body').on("click", ".free", function(){
         var product_key = $(this).attr('id');
-        products_command.splice(product_key,1);
+        products_command[product_key].price = 0;
         displayCommandProducts();
     });
 
@@ -148,4 +152,18 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#products').on('dragenter', function (e) { e.preventDefault() });
+    $('#products').on('dragover', function (e) { e.preventDefault() });
+    $('#products').on('drop', function (e) {
+        var delete_id = e.originalEvent.dataTransfer.getData("id");
+        products_command.splice(delete_id,1);
+        displayCommandProducts();
+        e.preventDefault();
+    });
+
+    $("body").on("dragstart", ".drag-element", function (e){
+        e.originalEvent.dataTransfer.setData("id",$(this).attr('data-product'));
+    });
+
 });
