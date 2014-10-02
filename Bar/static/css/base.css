@@ -39,18 +39,16 @@ body {
 }
 
 .command-panel {
-    background-color: whitesmoke;
-    border-radius: 5px 5px 0px 0px;
     padding-left: 0px;
     padding-right: 0px;
 }
 
 .command-total {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 0px;
     margin-left: 5px;
     margin-bottom: 20px;
-    height: 30px;
+    height: 50px;
     background-color: white;
     display: flex;
     align-items: center;
@@ -66,13 +64,17 @@ body {
     margin-left: 25px;
 }
 
+.command_list > ul {
+    padding-left: 0px;
+}
+
 .command_list > ul > li {
     height: 60px;
-    background-color: white;
+    background-color: rgba(245, 164, 50, 0.6);
     display: flex;
     align-items: center;
-    border-radius: 5px 0px 0px 5px;
-    margin-left: -20px;
+    border-radius: 5px 5px 5px 5px;
+    padding-left: 0px;
 }
 
 .home {
