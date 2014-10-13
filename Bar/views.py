@@ -98,13 +98,6 @@ def make_command(request, barman_id):
                         "happy_hour":request.session["happy_hour"]
     })
 
-def _get_category_path(category, path = []):
-    category = Category.objects.get(pk=category)
-    if category.parent:
-        path.append(category.parent.pk)
-        _get_category_path(category.parent.pk, path)
-    return path
-
 @login_required
 def category_onclick(request, category_id):
     if request.is_ajax():
@@ -171,7 +164,7 @@ def get_solde(request):
         nb_commandes = Commande.objects.filter(session__en_cours=1).count()
         return HttpResponse(json.dumps({"total" : commandes['total'], "nb_command": nb_commandes}), content_type="application/json")
     else:
-        return redirect('home')
+        raise Http404
 
 @login_required
 def add_note(request):

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from Bar.models import BarMan, Note, Commande, Commande_has_products
+from Bar.models import BarMan, Note, Commande, Commande_has_products, Session
 
 
 class CashTestCase(TestCase):
@@ -19,6 +19,13 @@ class AccesTestCase(CashTestCase):
     def test_open_wrong_password_cashregister(self):
         response = self.client.post("/open",{'password':'pouet'})
         self.assertRedirects(response,'/open',302)
+
+    def test_close_cashregister(self):
+        self.login()
+        response = self.client.get('/close')
+        self.assertRedirects(response, '/', 302)
+        sessions = Session.objects.filter(en_cours=1)
+        self.assertEquals(len(sessions), 0)
 
 class HomeTestCase(CashTestCase):
 
@@ -161,3 +168,27 @@ class CommandTestCase(CashTestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         self.assertEquals(response.status_code, 404)
+
+    def test_consult_session_solde(self):
+        self.login()
+        self.client.post(
+            '/add_command/',
+            {
+                'barman': self.barman.pk,
+                'total_price':12.5,
+                'product_list':'[{"price": 5.0, "id": 12, "happy_hour": 5.0, "name": "Verre Vinojito"}]'
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        response = self.client.get('/get_solde/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content, '{"total": 12.5, "nb_command": 1}')
+
+    def test_consult_solde_without_ajax(self):
+        self.login()
+        response = self.client.get('/get_solde/')
+        self.assertEquals(response.status_code, 404)
+
+    def test_consult_solde_without_login(self):
+        response = self.client.get('/get_solde/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertRedirects(response, 'open?next=/get_solde/', 302)
