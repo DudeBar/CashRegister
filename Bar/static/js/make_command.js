@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
 
     function getCookie(name) {
@@ -26,7 +27,7 @@ $(document).ready(function() {
         var cat_buttons = "";
         for (var i=0; i<categories.length; i++){
             for(var key in categories[i])
-                $("#categories").append('<button type="button" class="btn btn-default btn-info category" id="'+key+'">'+categories[i][key]+'</button>\n');
+                $("#categories").append('<button type="button" class="btn btn-default btn-info category btn-category" id="'+key+'">'+categories[i][key]+'</button>\n');
         }
     }
 
@@ -58,8 +59,9 @@ $(document).ready(function() {
                 product_info.price = product_info.happy_hour
             }
             total_price += product_info.price;
-            $("#command").append("<li draggable='true' data-product='"+i+"' class='drag-element'>" +
-                                 "<div class='col-sm-8 col-md-8 col-lg-8'>"+product_info.name+" : "+product_info.price+"€</div>" +
+            $("#command").append("<li data-product='"+i+"' class='drag-element col-sm-12 col-md-12 col-lg-12'>" +
+                                 "<span class='col-sm-1 col-md-1 col-lg-1 glyphicon glyphicon-remove delete' id="+i+"></span>"+
+                                 "<div class='col-sm-9 col-md-9 col-lg-9'><b>"+product_info.name+" :</b> "+product_info.price+"€</div>" +
                                  "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default btn-product glyphicon glyphicon-gift free' id="+i+"></button>" +
                                  "<button type='button' class='col-sm-2 col-md-2 col-lg-2 btn btn-default btn-product glyphicon glyphicon-header gift' id="+i+"></button>" +
                                  "</li>");
@@ -76,6 +78,7 @@ $(document).ready(function() {
             products_command.push(product_info);
         }
         calc_cumul = undefined;
+        $("#calc-result").html('');
         displayCommandProducts();
     }
 
@@ -126,10 +129,18 @@ $(document).ready(function() {
             calc_cumul = "";
         }
         calc_cumul += calc_key;
+        $("#calc-result").html(calc_cumul);
+    });
+    //calc-del
+    $('body').on("click", "#calc-del", function(){
+        calc_cumul = undefined;
+        $("#calc-result").html('');
     });
 
-    $('body').on("click", ".annuler", function(){
-        window.location.replace("/");
+    $('body').on("click", ".delete", function(){
+        var product_key = $(this).attr('id');
+        products_command.splice(product_key,1);
+        displayCommandProducts();
     });
 
     $('body').on("click", "#validate", function(){
@@ -153,17 +164,34 @@ $(document).ready(function() {
         });
     });
 
-    $('#products').on('dragenter', function (e) { e.preventDefault() });
-    $('#products').on('dragover', function (e) { e.preventDefault() });
-    $('#products').on('drop', function (e) {
-        var delete_id = e.originalEvent.dataTransfer.getData("id");
-        products_command.splice(delete_id,1);
-        displayCommandProducts();
-        e.preventDefault();
+
+    $('#solde').on('show.bs.modal', function (e) {
+        $.ajax({
+            type: 'GET',
+            url: "/get_solde/",
+            success: function(data){
+                $('#total-solde').html(data.total);
+                $('#nb-command').html(data.nb_command);
+            }
+        });
     });
 
-    $("body").on("dragstart", ".drag-element", function (e){
-        e.originalEvent.dataTransfer.setData("id",$(this).attr('data-product'));
+    $('body').on("click", ".delete-note", function(){
+        var note_key = $(this).attr('id');
+        var data_post = {"note_id": note_key};
+
+        $.ajax({
+            type: 'POST',
+            url: "/del_note/",
+            data:data_post,
+            dataType: "json",
+            headers: {'X-CSRFToken': getCookie('csrftoken')},
+            success: function(data){
+               if (data.data){
+                    window.location.replace("/");
+                }
+            }
+        });
     });
 
 });

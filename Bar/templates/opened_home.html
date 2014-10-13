@@ -6,7 +6,19 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12 home-barman">
                     {% for barman in barmans %}
-                        <a href="{% url 'make_command' barman.id %}" class="btn btn-default col-lg-3 col-md-3 col-sm-3 col-lg-offset-1 barman-btn">{{ barman.name }}</a>
+                        <a href="{% url 'make_command' barman.id %}" class="btn btn-default col-lg-3 col-md-3 col-sm-3 col-lg-offset-1 barman-btn {% if barman.name == "Mickey" %}mickey-btn{% endif %}">{{ barman.name }}</a>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 home-notes">
+                    {% for note in notes %}
+                        <div class="col-lg-12 col-md-12 col-sm-12 alert {% if note.type == 2 %}alert-danger{% else %}alert-info{% endif %}" role="alert">
+                            <div class="col-lg-11 col-md-11 col-sm-11"
+                                <p><b>{{ note.title }}</b></p>
+                                <p>{{ note.text }}</p>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1 glyphicon glyphicon-remove-circle delete-note" id="{{ note.pk }}">
+                            </div>
+                        </div>
                     {% endfor %}
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 home-option">

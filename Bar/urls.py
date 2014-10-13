@@ -12,4 +12,7 @@ urlpatterns = patterns(
     url(r'^category_onclick/(?P<category_id>\d+)/$', views.category_onclick, name='category_onclick'),
     url(r'^product_onclick/(?P<product_id>\d+)/$', views.product_onclick, name='product_onclick'),
     url(r'^set_happy_hour/$', views.set_happy_hour, name='set_happy_hour'),
+    url(r'^get_solde/$', views.get_solde, name='get_solde'),
+    url(r'^add_note/$', views.add_note, name='add_note'),
+    url(r'^del_note/$', views.del_note, name='del_note'),
     )

@@ -67,15 +67,25 @@ ROOT_URLCONF = 'CashRegister.urls'
 WSGI_APPLICATION = 'CashRegister.wsgi.application'
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'cash',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1'
+    }
+}
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -95,6 +105,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGIN_URL = '/open'
 
 BROKER_URL = 'redis://localhost:6379/0'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout':24 * 3600}

@@ -1,16 +1,17 @@
 import json
-from Bar.form import OpenForm
+from Bar.form import OpenForm, NoteForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-from Bar.models import BarMan, Category, Product, Commande, Session, Commande_has_products
+from Bar.models import BarMan, Category, Product, Commande, Session, Commande_has_products, Note
 from Bar.tasks import send_fidelity
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg, Sum
 
 
 def home(request):
+    notes_list = Note.objects.all().order_by('-pk')
     if request.user.is_authenticated():
         happy_hour=False
         if "happy_hour" not in request.session.keys():
@@ -23,14 +24,15 @@ def home(request):
         return render(request, "opened_home.html", {
             'happy_hour': happy_hour,
             'barmans': barmans,
-            'last_commands': last_commands
+            'last_commands': last_commands,
+            'notes': notes_list
         })
     else:
         if Session.objects.filter(en_cours=1).exists():
             session = Session.objects.get(en_cours=1)
             session.en_cours=0
             session.save()
-        return render(request, "closed_home.html", {})
+        return render(request, "closed_home.html", {'notes': notes_list})
 
 @login_required
 def set_happy_hour(request):
@@ -51,6 +53,8 @@ def open(request):
                 if user.is_active:
                     login(request, user)
                     Session.objects.create(en_cours=1)
+                    if "happy_hour" not in request.session.keys():
+                        request.session["happy_hour"]=False
                     return redirect("home")
                 else:
                     return redirect("open")
@@ -63,15 +67,18 @@ def open(request):
         return render(request, "open.html", {'form':form})
 
 def close(request):
-    session = Session.objects.get(en_cours=1)
-    session.en_cours = 0
-    session.save()
+    try:
+        session = Session.objects.get(en_cours=1)
+        session.en_cours = 0
+        session.save()
+    except:
+        pass
     logout(request)
     return redirect("home")
 
 @login_required
 def make_command(request, barman_id):
-    categories = Category.objects.filter(parent=None)
+    categories = Category.objects.filter(parent=None).order_by('name')
     current_session = Session.objects.get(en_cours=1)
     best_product_list = Commande_has_products.objects.values('product').annotate(pcount=Count('product')).order_by('-pcount')[:3]
     day_best_product_list = Commande_has_products.objects.filter(commande__session=current_session).values('product').annotate(pcount=Count('product')).order_by('-pcount')[:3]
@@ -113,16 +120,18 @@ def category_onclick(request, category_id):
         for path in category_path:
             json_path.append({path.pk:path.name})
         json_path.append({0:"Racine"})
-        products = Product.objects.filter(category=category)
+        products = Product.objects.filter(category=category).order_by('name')
         for product in products:
             json_products.append({product.pk:product.name})
         if category_id != 0:
-            child_categories = Category.objects.filter(parent=category)
+            child_categories = Category.objects.filter(parent=category).order_by('name')
         else:
-            child_categories = Category.objects.filter(parent=None)
+            child_categories = Category.objects.filter(parent=None).order_by('name')
         for child in child_categories:
             json_categories.append({child.pk:child.name})
         return HttpResponse(json.dumps({"path":json_path, "products":json_products, "categories":json_categories}))
+    else:
+        return redirect("home")
 
 @login_required
 def product_onclick(request, product_id):
@@ -151,3 +160,34 @@ def add_command(request):
         except:
             return HttpResponse(json.dumps({"result" : True, "data" : "NOK" }), content_type="application/json")
 
+@login_required
+def get_solde(request):
+    if request.is_ajax():
+        commandes = Commande.objects.filter(session__en_cours=1).aggregate(total=Sum('total_price'))
+        nb_commandes = Commande.objects.filter(session__en_cours=1).count()
+        return HttpResponse(json.dumps({"total" : commandes['total'], "nb_command": nb_commandes}), content_type="application/json")
+    else:
+        return redirect('home')
+
+@login_required
+def add_note(request):
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            Note.objects.create(title=form.cleaned_data['title'], text=form.cleaned_data['text'], type=form.cleaned_data['type'])
+            return redirect("home")
+        else:
+            return render(request, "add_note.html", {'form': form})
+    else:
+        form = NoteForm()
+        return render(request, "add_note.html", {'form': form})
+
+@login_required
+def del_note(request):
+    if request.is_ajax():
+        note_id = request.POST['note_id']
+        note = Note.objects.get(pk=note_id)
+        note.delete()
+        return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), content_type="application/json")
+    else:
+        return redirect("home")

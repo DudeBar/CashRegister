@@ -1,6 +1,7 @@
 
 body {
     padding-top: 70px;
+    background-color: rgba(245, 188, 27, 0.2);
 }
 
 .make-command{
@@ -13,22 +14,43 @@ body {
     align-items: center;
 }
 
+.central-div {
+    background-image: url('../img/dude2.png');
+    background-size: 40%;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 500px;
+    overflow-y:scroll;
+}
+
 .product_list {
-    height: 400px;
+    margin-top: 0px;
+}
+
+.product {
+    margin-bottom: 10px;
+    height: 80px;
+    min-width: 180px;
+    background-color: rgba(245, 164, 50, 1);
+    font-weight: bold;
+    color: white;
+}
+
+.btn-category {
+    margin-bottom: 10px;
+    min-width: 200px;
+    height: 80px;
 }
 
 .command_list {
-    height: 500px;
+    height: 510px;
     padding-left: 0px;
     padding-right: 0px;
+    overflow-y:scroll;
 }
 
 .hidden-div {
     display: none;
-}
-
-.product_list{
-    margin-top: 20px;
 }
 
 .ariane {
@@ -78,13 +100,18 @@ body {
 }
 
 .home {
-    height: 80%;
+
 }
 .home-barman {
-    height: 70%;
+    height: 80px;
+    margin-bottom: 10px;
+}
+.home-notes {
+    height: 400px;
+    overflow-y:scroll;
 }
 .home-option {
-    margin-top:30%;
+    margin-top:20px;
 }
 .barman-btn {
     height:80px;
@@ -111,4 +138,34 @@ body {
     background-color: black;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.mickey-btn {
+    background-color: hotpink;
+    color: white;
+}
+
+.nb-calc {
+    width: 80px;
+    height: 30px;
+    border-radius: 5px 5px 5px 5px;
+    border: 1px;
+    border-style: solid;
+    margin-top: 3px;
+    background-color: white;
+    margin-left: -30px;
+    text-align: center;
+}
+#calc-result {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 3px;
+}
+#calc-del{
+    width: 80px;
+    color: red;
+}
+
+.gift {
+    margin-left: 5px;
 }

@@ -1,32 +1,41 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
 {% block content %}
+    <script>$(function() {$('#draggable').draggable();});</script>
     <div class="make-command">
         <div class="col-sm-9 col-md-9 col-lg-9 products-panel">
             <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12 ariane well well-lg" id="ariane">
+                <div class="col-sm-12 col-md-12 col-lg-12 ariane well" id="ariane">
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-12" id="categories">
-                    {% for category in categories %}
-                        <button type="button" class="btn btn-default btn-info category" id="{{ category.id }}">{{ category.name }}</button>
-                    {% endfor %}
+                <div class="col-sm-12 col-md-12 col-lg-12 central-div" id="central">
+                    <div class="col-sm-12 col-md-12 col-lg-12" id="categories">
+                        {% for category in categories %}
+                            <button type="button" class="btn btn-default btn-info category btn-category" id="{{ category.id }}">{{ category.name }}</button>
+                        {% endfor %}
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 product_list" id="products">
+                        {% for product in products %}
+                            <button type="button" class="btn btn-default btn-product product glyphicon glyphicon-star-empty" id="{{ product.pk }}">{{ product.name }}</button>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-12 product_list" id="products">
-                    {% for product in products %}
-                        <button type="button" class="btn btn-default btn-product product glyphicon glyphicon-star-empty" id="{{ product.pk }}">{{ product.name }}</button>
-                    {% endfor %}
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-12 calculette" id="calculette">
-                    <div class="btn btn-default calc" id="0">0</div>
-                    <div class="btn btn-default calc" id="1">1</div>
-                    <div class="btn btn-default calc" id="2">2</div>
-                    <div class="btn btn-default calc" id="3">3</div>
-                    <div class="btn btn-default calc" id="4">4</div>
-                    <div class="btn btn-default calc" id="5">5</div>
-                    <div class="btn btn-default calc" id="6">6</div>
-                    <div class="btn btn-default calc" id="7">7</div>
-                    <div class="btn btn-default calc" id="8">8</div>
-                    <div class="btn btn-default calc" id="9">9</div>
+                <div class="col-sm-12 col-md-12 col-lg-12 calculette well well-sm" id="calculette">
+                    <div class="col-sm-11 col-md-11 col-lg-11">
+                        <div class="btn btn-default calc" id="0">0</div>
+                        <div class="btn btn-default calc" id="1">1</div>
+                        <div class="btn btn-default calc" id="2">2</div>
+                        <div class="btn btn-default calc" id="3">3</div>
+                        <div class="btn btn-default calc" id="4">4</div>
+                        <div class="btn btn-default calc" id="5">5</div>
+                        <div class="btn btn-default calc" id="6">6</div>
+                        <div class="btn btn-default calc" id="7">7</div>
+                        <div class="btn btn-default calc" id="8">8</div>
+                        <div class="btn btn-default calc" id="9">9</div>
+                        <div class="btn btn-default" id="calc-del"><b>del</b></div>
+                    </div>
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <div class="nb-calc"><span id="calc-result"></span></div>
+                    </div>
                 </div>
             </div>
         </div>

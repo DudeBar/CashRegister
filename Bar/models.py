@@ -55,3 +55,7 @@ class Config(models.Model):
     variable = models.CharField(max_length=255)
     value = models.CharField(max_length=255)
 
+class Note(models.Model):
+    title = models.CharField(max_length=100)
+    text = models.TextField()
+    type = models.IntegerField()

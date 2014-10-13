@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-        La caisse est fermée
+        <div class="row">
+             <div class="col-lg-12 col-md-12 col-sm-12 home-notes">
+                {% for note in notes %}
+                    <div class="alert {% if note.type == 2 %}alert-danger{% else %}alert-info{% endif %}" role="alert">
+                        <p><b>{{ note.title }}</b></p>
+                        <p>{{ note.text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
 {% endblock %}
