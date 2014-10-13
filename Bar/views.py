@@ -1,7 +1,7 @@
 import json
 from Bar.form import OpenForm, NoteForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
@@ -138,6 +138,8 @@ def product_onclick(request, product_id):
     if request.is_ajax():
         product = Product.objects.get(pk=product_id)
         return HttpResponse(json.dumps({"id":product.pk, "name":product.name, "price":product.price, "happy_hour":product.happy_hour}))
+    else:
+        return redirect('home')
 
 @login_required
 def add_command(request):
@@ -153,12 +155,14 @@ def add_command(request):
             for product_command in product_list:
                 product = Product.objects.get(pk=product_command['id'])
                 Commande_has_products.objects.create(commande=command, product=product, price=product_command["price"])
-            session.total_money += total_price
+            session.total_money += float(total_price)
             session.save()
             send_fidelity.delay()
             return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), content_type="application/json")
         except:
             return HttpResponse(json.dumps({"result" : True, "data" : "NOK" }), content_type="application/json")
+    else:
+        raise Http404
 
 @login_required
 def get_solde(request):

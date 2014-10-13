@@ -1,5 +1,5 @@
 from django.test import TestCase
-from Bar.models import BarMan, Note
+from Bar.models import BarMan, Note, Commande, Commande_has_products
 
 
 class CashTestCase(TestCase):
@@ -89,3 +89,75 @@ class CommandTestCase(CashTestCase):
         self.login()
         response = self.client.get('/category_onclick/5/')
         self.assertRedirects(response, '/', 302)
+
+    def test_add_product_to_command(self):
+        self.login()
+        response = self.client.get('/product_onclick/12/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        assert_response = '{"price": 5.0, "id": 12, "happy_hour": 5.0, "name": "Verre Vinojito"}'
+        self.assertEquals(response.content, assert_response)
+
+    def test_add_product_without_login(self):
+        response = self.client.get('/product_onclick/12/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertRedirects(response, '/open?next=/product_onclick/12/', 302)
+
+    def test_add_product_without_ajax(self):
+        self.login()
+        response = self.client.get('/product_onclick/12/')
+        self.assertRedirects(response, '/', 302)
+
+    def test_add_command(self):
+        self.login()
+        response = self.client.post(
+            '/add_command/',
+            {
+                'barman': self.barman.pk,
+                'total_price':12.5,
+                'product_list':'[{"price": 5.0, "id": 12, "happy_hour": 5.0, "name": "Verre Vinojito"}]'
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.content, '{"data": "OK", "result": true}')
+        command = Commande.objects.all()
+        self.assertEquals(len(command), 1)
+        self.assertEquals(command[0].total_price, 12.5)
+        command_products = Commande_has_products.objects.filter(commande = command)
+        self.assertEquals(len(command_products), 1)
+        self.assertEquals(command_products[0].price, 5.0)
+
+    def test_add_command_without_login(self):
+        response = self.client.post(
+            '/add_command/',
+            {
+                'barman': self.barman.pk,
+                'total_price':12.5,
+                'product_list':'[{"price": 5.0, "id": 12, "happy_hour": 5.0, "name": "Verre Vinojito"}]'
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertRedirects(response, '/open?next=/add_command/', 302)
+
+    def test_add_command_without_ajax(self):
+        self.login()
+        response = self.client.post(
+            '/add_command/',
+            {
+                'barman': self.barman.pk,
+                'total_price':12.5,
+                'product_list':'[{"price": 5.0, "id": 12, "happy_hour": 5.0, "name": "Verre Vinojito"}]'
+            }
+        )
+        self.assertEquals(response.status_code, 404)
+
+    def test_add_command_without_get(self):
+        self.login()
+        response = self.client.get(
+            '/add_command/',
+            {
+                'barman': self.barman.pk,
+                'total_price':12.5,
+                'product_list':'[{"price": 5.0, "id": 12, "happy_hour": 5.0, "name": "Verre Vinojito"}]'
+            },
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEquals(response.status_code, 404)
