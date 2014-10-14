@@ -149,7 +149,7 @@ def add_command(request):
                 product = Product.objects.get(pk=product_command['id'])
                 Commande_has_products.objects.create(commande=command, product=product, price=product_command["price"])
             session.total_money += float(total_price)
-            session.save()
+            session.save(product_list)
             send_fidelity.delay()
             return HttpResponse(json.dumps({"result" : True, "data" : "OK" }), content_type="application/json")
         except:
