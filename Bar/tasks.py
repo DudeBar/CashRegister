@@ -5,10 +5,8 @@ import requests
 
 logger = get_task_logger(__name__)
 
-@task
-def send_fidelity():
-    print 'pouet la task'
-    products_list = []
+@task()
+def send_fidelity(products_list):
     for product in products_list:
         if product['id'] in ['2','4','6','9','10','94','97','98','110','111']:#les pintes
             product['type']="pinte"
