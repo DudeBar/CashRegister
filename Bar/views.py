@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from Bar.models import BarMan, Category, Product, Commande, Session, Commande_has_products, Note
 from Bar.tasks import send_fidelity
-from django.db.models import Count, Avg, Sum
+from django.db.models import Count, Sum
 
 
 def home(request):
@@ -43,6 +43,14 @@ def set_happy_hour(request):
     return redirect("home")
 
 def open(request):
+    if request.user.is_authenticated() and Session.objects.filter(en_cours=1).exists():
+        logout(request)
+        return redirect("home")
+    if Session.objects.filter(en_cours=1).exists():
+        opened_sessions = Session.objects.filter(en_cours=1)
+        for session in opened_sessions:
+            session.en_cours = 0
+            session.save()
     if request.method == "POST":
         form = OpenForm(request.POST)
         if form.is_valid():
@@ -68,9 +76,10 @@ def open(request):
 
 def close(request):
     try:
-        session = Session.objects.get(en_cours=1)
-        session.en_cours = 0
-        session.save()
+        sessions = Session.objects.filter(en_cours=1)
+        for session in sessions:
+            session.en_cours = 0
+            session.save()
     except:
         pass
     logout(request)
