@@ -22,8 +22,9 @@ class AccesTestCase(CashTestCase):
 
     def test_close_cashregister(self):
         self.login()
+        self.client.post("/open",{'password':'1212'})
         response = self.client.get('/close')
-        self.assertRedirects(response, '/', 302)
+        self.assertEquals(response.status_code, 302)
         sessions = Session.objects.filter(en_cours=1)
         self.assertEquals(len(sessions), 0)
 

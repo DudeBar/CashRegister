@@ -12,7 +12,7 @@ from django.db.models import Count, Sum
 
 def home(request):
     notes_list = Note.objects.all().order_by('-pk')
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and Session.objects.filter(en_cours=1).exists():
         happy_hour=False
         if "happy_hour" not in request.session.keys():
             request.session["happy_hour"]=False
@@ -28,11 +28,7 @@ def home(request):
             'notes': notes_list
         })
     else:
-        if Session.objects.filter(en_cours=1).exists():
-            session = Session.objects.get(en_cours=1)
-            session.en_cours=0
-            session.save()
-        return render(request, "closed_home.html", {'notes': notes_list})
+        return redirect("open")
 
 @login_required
 def set_happy_hour(request):
@@ -43,14 +39,6 @@ def set_happy_hour(request):
     return redirect("home")
 
 def open(request):
-    if request.user.is_authenticated() and Session.objects.filter(en_cours=1).exists():
-        logout(request)
-        return redirect("home")
-    if Session.objects.filter(en_cours=1).exists():
-        opened_sessions = Session.objects.filter(en_cours=1)
-        for session in opened_sessions:
-            session.en_cours = 0
-            session.save()
     if request.method == "POST":
         form = OpenForm(request.POST)
         if form.is_valid():
@@ -60,7 +48,8 @@ def open(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    Session.objects.create(en_cours=1)
+                    if not Session.objects.filter(en_cours=1).exists():
+                        Session.objects.create(en_cours=1)
                     if "happy_hour" not in request.session.keys():
                         request.session["happy_hour"]=False
                     return redirect("home")
