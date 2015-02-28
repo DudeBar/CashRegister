@@ -1,11 +1,14 @@
 import json
+from time import sleep
 import soco
 import requests
 
-for zone in soco.discover():
-    info = zone.get_current_track_info()
-    json_info = json.loads(info)
-    if json_info.metadata != 'NOT_IMPLEMENTED':
-        URL = 'http://www.dudebar.fr/current_music'
-        params = dict(login="", password="", data=info)
-        requests.post(URL, data=params, headers=dict(Referer=URL))
+while 1:
+    sleep(15)
+    for zone in soco.discover():
+        info = zone.get_current_track_info()
+        if info['metadata'] != 'NOT_IMPLEMENTED':
+            print info
+            URL = 'http://www.dudebar.fr/music'
+            params = dict(login="", password="", data=json.dumps(info))
+            requests.post(URL, data=params, headers=dict(Referer=URL))
