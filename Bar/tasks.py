@@ -22,5 +22,5 @@ def send_fidelity(products_list):
             product['type']="autre"
 
     URL = 'http://www.dudebar.fr/add_command'
-    params = dict(login="", password="", command=json.dumps(products_list))
+    params = dict(login="", password="", data=json.dumps(products_list))
     requests.post(URL, data=params, headers=dict(Referer=URL))
