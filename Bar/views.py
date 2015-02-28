@@ -1,4 +1,5 @@
 import json
+from django.views.decorators.cache import cache_page
 from Bar.form import OpenForm, NoteForm
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
@@ -74,6 +75,7 @@ def close(request):
     logout(request)
     return redirect("home")
 
+@cache_page(60*15)
 @login_required
 def make_command(request, barman_id):
     categories = Category.objects.filter(parent=None).order_by('name')
@@ -96,6 +98,7 @@ def make_command(request, barman_id):
                         "happy_hour":request.session["happy_hour"]
     })
 
+@cache_page(60*15)
 @login_required
 def category_onclick(request, category_id):
     if request.is_ajax():
@@ -124,6 +127,7 @@ def category_onclick(request, category_id):
     else:
         return redirect("home")
 
+@cache_page(60*15)
 @login_required
 def product_onclick(request, product_id):
     if request.is_ajax():
