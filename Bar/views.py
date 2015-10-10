@@ -21,7 +21,7 @@ def home(request):
             happy_hour=request.session.get("happy_hour")
 
         barmans = BarMan.objects.all()
-        last_commands = Commande.objects.all().order_by('-date')[:10]
+        last_commands = Commande.objects.all().order_by('-pk')[:10]
         return render(request, "opened_home.html", {
             'happy_hour': happy_hour,
             'barmans': barmans,
@@ -147,9 +147,11 @@ def add_command(request):
             total_price = request.POST.get("total_price")
             command = Commande(barman=barman, total_price=total_price, payment="Espece", session=session)
             command.save()
+            command_asso = []
             for product_command in product_list:
                 product = Product.objects.get(pk=product_command['id'])
-                Commande_has_products.objects.create(commande=command, product=product, price=product_command["price"])
+                command_asso.append(Commande_has_products(commande=command, product=product, price=product_command["price"]))
+            Commande_has_products.objects.bulk_create(command_asso)
             session.total_money += float(total_price)
             session.save()
             send_fidelity.delay(product_list)
